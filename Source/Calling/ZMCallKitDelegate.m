@@ -621,6 +621,7 @@ NS_ASSUME_NONNULL_END
 {
     [self logInfoForConversation:nil line:__LINE__ format:@"CXProvider %@ didDeactivateAudioSession", provider];
     
+    [self.mediaManager stopAudio];
     [self.mediaManager resetAudioDevice];
 }
 
