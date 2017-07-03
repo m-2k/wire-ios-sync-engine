@@ -53,7 +53,7 @@
 
 - (ZMTransportRequest *)nextRequest
 {
-    if (self.authenticationStatus.currentPhase == ZMAuthenticationPhaseRequestPhoneVerificationCodeForLogin) {
+    if (self.authenticationStatus.currentPhase == ZMAuthenticationPhaseRequestPhoneVerificationCodeForAuthentication) {
         [self.codeRequestSync readyForNextRequestIfNotBusy];
         return [self.codeRequestSync nextRequest];
     }
@@ -66,7 +66,7 @@
 {
     ZMTransportRequest *request = [[ZMTransportRequest alloc] initWithPath:@"/login/send"
                                                                     method:ZMMethodPOST
-                                                                   payload:@{@"phone": self.authenticationStatus.loginPhoneNumberThatNeedsAValidationCode}
+                                                                   payload:@{@"phone": self.authenticationStatus.authenticationPhoneNumberThatNeedsAValidationCode}
                                                             authentication:ZMTransportRequestAuthNone];
     return request;
 }
@@ -75,7 +75,7 @@
 {
     ZMAuthenticationStatus *authStatus  = self.authenticationStatus;
     if(response.result == ZMTransportResponseStatusSuccess) {
-        [authStatus didCompleteRequestForLoginCodeSuccessfully];
+        [authStatus didCompleteRequestForAuthenticationCodeSuccessfully];
     }
     else {
         NSError *error = {
@@ -85,7 +85,7 @@
             [NSError userSessionErrorWithErrorCode:ZMUserSessionUnkownError userInfo:nil]
         };
 
-        [authStatus didFailRequestForLoginCode:error];
+        [authStatus didFailRequestForAuthenticationCode:error];
     }
 }
 

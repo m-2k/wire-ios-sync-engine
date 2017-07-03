@@ -103,11 +103,11 @@ NSTimeInterval DefaultPendingValidationLoginAttemptInterval = 5;
         return request;
     }
     
-    if(authenticationStatus.currentPhase == ZMAuthenticationPhaseLoginWithPhone) {
+    if(authenticationStatus.currentPhase == ZMAuthenticationPhaseAuthenticateWithPhone) {
         [self.loginWithPhoneNumberSync readyForNextRequestIfNotBusy];
         return [self.loginWithPhoneNumberSync nextRequest];
     }
-    if(authenticationStatus.currentPhase == ZMAuthenticationPhaseLoginWithEmail) {
+    if(authenticationStatus.currentPhase == ZMAuthenticationPhaseAuthenticateWithEmail) {
         [self.timedDownstreamSync readyForNextRequestIfNotBusy];
         request = [self.timedDownstreamSync nextRequest];
     }
@@ -141,7 +141,7 @@ NSTimeInterval DefaultPendingValidationLoginAttemptInterval = 5;
 - (BOOL)isWaitingForEmailVerification
 {
     ZMAuthenticationPhase authenticationPhase = self.authenticationStatus.currentPhase;
-    return authenticationPhase == ZMAuthenticationPhaseWaitingForEmailVerification || authenticationPhase == ZMAuthenticationPhaseLoginWithEmail;
+    return authenticationPhase == ZMAuthenticationPhaseWaitingForEmailVerification || authenticationPhase == ZMAuthenticationPhaseAuthenticateWithEmail;
 }
 
 - (ZMTransportRequest *)requestForSingleRequestSync:(ZMSingleRequestSync *)sync
@@ -164,7 +164,7 @@ NSTimeInterval DefaultPendingValidationLoginAttemptInterval = 5;
     if (authenticationStatus.currentPhase == ZMAuthenticationPhaseAuthenticated) {
         return nil;
     }
-    ZMCredentials *credentials = authenticationStatus.loginCredentials;
+    ZMCredentials *credentials = authenticationStatus.authenticationCredentials;
     if(credentials == nil) {
         return nil;
     }
@@ -192,7 +192,7 @@ NSTimeInterval DefaultPendingValidationLoginAttemptInterval = 5;
     ZMAuthenticationStatus * authenticationStatus = self.authenticationStatus;
     NSString *email;
     if(authenticationStatus.currentPhase == ZMAuthenticationPhaseWaitingForEmailVerification) {
-        email = authenticationStatus.loginCredentials.email;
+        email = authenticationStatus.authenticationCredentials.email;
     }
     if (email.length == 0) {
         return nil;
@@ -211,23 +211,23 @@ NSTimeInterval DefaultPendingValidationLoginAttemptInterval = 5;
     BOOL shouldStartTimer = NO;
     ZMAuthenticationStatus * authenticationStatus = self.authenticationStatus;
     if (response.result == ZMTransportResponseStatusSuccess)    {
-        [authenticationStatus loginSucceed];
+        [authenticationStatus authenticationSucceed];
     }
     else if (response.result == ZMTransportResponseStatusPermanentError) {
         if (sync == self.timedDownstreamSync) {
             
             if([self isResponseForPendingEmailActionvation:response]) {
                 if (self.isWaitingForEmailVerification) {
-                    [authenticationStatus didFailLoginWithEmailBecausePendingValidation];
+                    [authenticationStatus didFailAuthenticationWithEmailBecausePendingValidation];
                     shouldStartTimer = YES;
                 }
             }
             else {
-                [authenticationStatus didFailLoginWithEmail:[self isResponseForInvalidCredentials:response]];
+                [authenticationStatus didFailAuthenticationWithEmail:[self isResponseForInvalidCredentials:response]];
             }
         }
         else if (sync == self.loginWithPhoneNumberSync) {
-            [authenticationStatus didFailLoginWithPhone:[self isResponseForInvalidCredentials:response]];
+            [authenticationStatus didFailAuthenticationWithPhone:[self isResponseForInvalidCredentials:response]];
         }
     }
 

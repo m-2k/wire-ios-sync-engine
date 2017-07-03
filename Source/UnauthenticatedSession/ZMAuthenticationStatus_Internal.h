@@ -23,9 +23,9 @@
 
 @property (nonatomic) ZMPersistentCookieStorage *cookieStorage;
 @property (nonatomic, copy) NSString *registrationPhoneNumberThatNeedsAValidationCode;
-@property (nonatomic, copy) NSString *loginPhoneNumberThatNeedsAValidationCode;
+@property (nonatomic, copy) NSString *authenticationPhoneNumberThatNeedsAValidationCode;
 
-@property (nonatomic) ZMCredentials *internalLoginCredentials;
+@property (nonatomic) ZMCredentials *internalAuthenticationCredentials;
 @property (nonatomic) ZMPhoneCredentials *registrationPhoneValidationCredentials;
 @property (nonatomic) ZMCompleteRegistrationUser *internalRegistrationUser;
 
@@ -35,16 +35,16 @@
 @property (nonatomic) BOOL duplicateRegistrationEmail;
 @property (nonatomic) BOOL duplicateRegistrationPhoneNumber;
 
-@property (nonatomic) BOOL isWaitingForLogin;
+@property (nonatomic) BOOL isWaitingForAuthentication;
 
 @property (nonatomic) NSManagedObjectContext *moc;
 @property (nonatomic) BOOL canClearCredentials;
 
-@property (nonatomic) ZMTimer *loginTimer;
+@property (nonatomic) ZMTimer *authenticationTimer;
 
 
-- (void)resetLoginAndRegistrationStatus;
-- (void)setLoginCredentials:(ZMCredentials *)credentials;
+- (void)resetAuthenticationAndRegistrationStatus;
+- (void)setAuthenticationCredentials:(ZMCredentials *)credentials;
 
 @end
 

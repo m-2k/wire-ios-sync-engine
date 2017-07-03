@@ -42,7 +42,7 @@ extension UnauthenticatedSession {
         } else if credentials.isInvalid {
             ZMUserSessionAuthenticationNotification.notifyAuthenticationDidFail(NSError.userSessionErrorWith(.needsCredentials, userInfo: nil))
         } else {
-            self.authenticationStatus.prepareForLogin(with: credentials)
+            self.authenticationStatus.prepareForAuthentication(with: credentials)
         }
         RequestAvailableNotification.notifyNewRequestsAvailable(nil)
     }
@@ -57,7 +57,7 @@ extension UnauthenticatedSession {
             return false
         }
         
-        authenticationStatus.prepareForRequestingPhoneVerificationCode(forLogin: phoneNumber)
+        authenticationStatus.prepareForRequestingPhoneVerificationCode(forAuthentication: phoneNumber)
         RequestAvailableNotification.notifyNewRequestsAvailable(nil)
         return true
     }

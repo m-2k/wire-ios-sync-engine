@@ -32,7 +32,7 @@
 @class ZMClientRegistrationStatus;
 
 FOUNDATION_EXPORT NSString * const RegisteredOnThisDeviceKey;
-FOUNDATION_EXPORT NSTimeInterval DebugLoginFailureTimerOverride;
+FOUNDATION_EXPORT NSTimeInterval DebugAuthenticationFailureTimerOverride;
 
 /// Invoked when the credentials are changed
 @protocol ZMAuthenticationStatusObserver <NSObject>
@@ -42,10 +42,10 @@ FOUNDATION_EXPORT NSTimeInterval DebugLoginFailureTimerOverride;
 
 typedef NS_ENUM(NSUInteger, ZMAuthenticationPhase) {
     ZMAuthenticationPhaseUnauthenticated = 0,
-    ZMAuthenticationPhaseLoginWithPhone,
-    ZMAuthenticationPhaseLoginWithEmail,
+    ZMAuthenticationPhaseAuthenticateWithPhone,
+    ZMAuthenticationPhaseAuthenticateWithEmail,
     ZMAuthenticationPhaseRequestPhoneVerificationCodeForRegistration,
-    ZMAuthenticationPhaseRequestPhoneVerificationCodeForLogin,
+    ZMAuthenticationPhaseRequestPhoneVerificationCodeForAuthentication,
     ZMAuthenticationPhaseVerifyPhoneForRegistration,
     ZMAuthenticationPhaseRegisterWithEmail,
     ZMAuthenticationPhaseRegisterWithPhone,
@@ -56,14 +56,14 @@ typedef NS_ENUM(NSUInteger, ZMAuthenticationPhase) {
 @interface ZMAuthenticationStatus : NSObject
 
 @property (nonatomic, readonly, copy) NSString *registrationPhoneNumberThatNeedsAValidationCode;
-@property (nonatomic, readonly, copy) NSString *loginPhoneNumberThatNeedsAValidationCode;
+@property (nonatomic, readonly, copy) NSString *authenticationPhoneNumberThatNeedsAValidationCode;
 
-@property (nonatomic, readonly) ZMCredentials *loginCredentials;
+@property (nonatomic, readonly) ZMCredentials *authenticationCredentials;
 @property (nonatomic, readonly) ZMPhoneCredentials *registrationPhoneValidationCredentials;
 @property (nonatomic, readonly) ZMCompleteRegistrationUser *registrationUser;
 
 @property (nonatomic, readonly) BOOL completedRegistration;
-@property (nonatomic, readonly) BOOL needsCredentialsToLogin;
+@property (nonatomic, readonly) BOOL needsCredentialsToAuthenticate;
 
 @property (nonatomic, readonly) ZMAuthenticationPhase currentPhase;
 @property (nonatomic, readonly) NSString *cookieLabel;
@@ -78,10 +78,10 @@ typedef NS_ENUM(NSUInteger, ZMAuthenticationPhase) {
 
 
 - (void)prepareForRegistrationOfUser:(ZMCompleteRegistrationUser *)user;
-- (void)prepareForLoginWithCredentials:(ZMCredentials *)credentials;
+- (void)prepareForAuthenticationWithCredentials:(ZMCredentials *)credentials;
 - (void)cancelWaitingForEmailVerification;
 - (void)prepareForRequestingPhoneVerificationCodeForRegistration:(NSString *)phone;
-- (void)prepareForRequestingPhoneVerificationCodeForLogin:(NSString *)phone;
+- (void)prepareForRequestingPhoneVerificationCodeForAuthentication:(NSString *)phone;
 - (void)prepareForRegistrationPhoneVerificationWithCredentials:(ZMPhoneCredentials *)phoneCredentials;
 
 
@@ -92,18 +92,18 @@ typedef NS_ENUM(NSUInteger, ZMAuthenticationPhase) {
 - (void)didCompleteRequestForPhoneRegistrationCodeSuccessfully;
 - (void)didFailRequestForPhoneRegistrationCode:(NSError *)error;
 
-- (void)didCompleteRequestForLoginCodeSuccessfully;
-- (void)didFailRequestForLoginCode:(NSError *)error;
+- (void)didCompleteRequestForAuthenticationCodeSuccessfully;
+- (void)didFailRequestForAuthenticationCode:(NSError *)error;
 
 - (void)didCompletePhoneVerificationSuccessfully;
 - (void)didFailPhoneVerificationForRegistration:(NSError *)error;
 
 
-- (void)loginSucceed; // called just after recieveing successful login response
-- (void)didFailLoginWithPhone:(BOOL)invalidCredentials;
-- (void)didFailLoginWithEmailBecausePendingValidation;
-- (void)didFailLoginWithEmail:(BOOL)invalidCredentials;
-- (void)didTimeoutLoginForCredentials:(ZMCredentials *)credentials;
+- (void)authenticationSucceed; // called just after recieveing successful authentication response
+- (void)didFailAuthenticationWithPhone:(BOOL)invalidCredentials;
+- (void)didFailAuthenticationWithEmailBecausePendingValidation;
+- (void)didFailAuthenticationWithEmail:(BOOL)invalidCredentials;
+- (void)didTimeoutAuthenticationForCredentials:(ZMCredentials *)credentials;
 
 @end
 
